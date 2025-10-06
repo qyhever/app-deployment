@@ -20,7 +20,7 @@
 - [ ] GitHub Secrets 已配置完成
   - [ ] `SERVER_HOST` - 服务器IP或域名
   - [ ] `SERVER_USER` - SSH用户名
-  - [ ] `SERVER_SSH_KEY` - SSH私钥
+  - [ ] `SERVER_SSH_RSA` - SSH私钥
   - [ ] `DB_USERNAME` - 数据库用户名
   - [ ] `DB_PASSWORD` - 数据库密码
   - [ ] `JWT_SECRET` - JWT密钥
