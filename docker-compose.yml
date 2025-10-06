@@ -28,6 +28,8 @@ services:
       dockerfile: Dockerfile
     container_name: r3-admin-server
     restart: unless-stopped
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
     environment:
       - NODE_ENV=production
       - PORT=9506
@@ -40,6 +42,7 @@ services:
       - DB_SYNC=false
       - JWT_SECRET=testsecret
       - JWT_EXPIRE=4h
+      - TZ=Asia/Shanghai
     extra_hosts:
       - "host.docker.internal:host-gateway"
     networks:
