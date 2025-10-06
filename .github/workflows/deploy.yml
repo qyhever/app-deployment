@@ -32,9 +32,12 @@ jobs:
       with:
         ssh-private-key: ${{ secrets.SERVER_SSH_KEY }}
 
-    - name: Display Public Key for debugging
+    - name: Display for debugging
       run: |
         echo "Verifying the public key that will be used for authentication..."
+        echo "SERVER_HOST: ${{ secrets.SERVER_HOST }}"
+        echo "SERVER_USER: ${{ secrets.SERVER_USER }}"
+        echo "SERVER_SSH_KEY: ${{ secrets.SERVER_SSH_KEY }}"
         ssh-keygen -y -f <(echo "${{ secrets.SERVER_SSH_KEY }}")
 
     - name: Add server to known hosts
