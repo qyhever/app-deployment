@@ -42,7 +42,7 @@
 
 ### 🔧 手动部署 (备用方案)
 1. [ ] 登录服务器: `ssh user@server`
-2. [ ] 进入项目目录: `cd /home/pros`
+2. [ ] 进入项目目录: `cd /opt/pros`
 3. [ ] 拉取最新代码: `git pull origin main`
 4. [ ] 运行部署脚本: `./deploy.sh prod deploy`
 
@@ -110,10 +110,10 @@ docker-compose logs r3-admin-server | grep -i db
 ### 🔧 权限问题
 ```bash
 # 检查文件权限
-ls -la /home/pros
+ls -la /opt/pros
 
 # 修复权限
-sudo chown -R $USER:$USER /home/pros
+sudo chown -R $USER:$USER /opt/pros
 ```
 
 ## 回滚方案
