@@ -1,0 +1,69 @@
+name: Unified Deployment from Services
+
+on:
+  repository_dispatch:
+    types: [deploy-pinco, deploy-r3-admin-front, deploy-r3-admin-server, deploy-nginx]
+
+env:
+  SERVER_HOST: ${{ secrets.SERVER_HOST }}
+  SERVER_USER: ${{ secrets.SERVER_USER }}
+  SERVER_SSH_KEY: ${{ secrets.SERVER_SSH_KEY }}
+  REGISTRY: ghcr.io
+  # 注意：IMAGE_OWNER 应该是您的 GitHub 用户名或组织名
+  IMAGE_OWNER: ${{ github.repository_owner }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout deployment configuration
+      uses: actions/checkout@v4
+
+    # 如果 Nginx 配置在另一个仓库，部署时需要拉取
+    - name: Checkout nginx configuration
+      if: github.event.action == 'deploy-nginx'
+      uses: actions/checkout@v4
+      with:
+        repository: YOUR_USERNAME/nginx-config-repo # 替换为您的 Nginx 配置仓库
+        path: ./nginx # 将配置拉取到 nginx 目录
+
+    - name: Setup SSH
+      uses: webfactory/ssh-agent@v0.9.0
+      with:
+        ssh-private-key: ${{ secrets.SERVER_SSH_KEY }}
+
+    - name: Add server to known hosts
+      run: ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
+
+    - name: Create deployment directory on server
+      run: ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "mkdir -p /home/pros"
+
+    - name: Copy deployment files to server
+      run: |
+        scp docker-compose.yml ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/home/pros/
+        scp docker-compose.prod.yml ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/home/pros/
+        scp -r nginx/ ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/home/pros/
+
+    - name: Login to registry on server
+      run: |
+        ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "echo ${{ secrets.GITHUB_TOKEN }} | docker login ${{ env.REGISTRY }} -u ${{ github.actor }} --password-stdin"
+
+    - name: Deploy application
+      run: |
+        ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'EOF'
+          cd /home/pros
+          
+          # 从 dispatch 事件中获取服务名
+          SERVICE_NAME="${{ github.event.client_payload.service }}"
+          
+          # 如果有服务名，只拉取该服务的最新镜像，否则拉取所有
+          if [ -n "$SERVICE_NAME" ]; then
+            docker-compose -f docker-compose.yml -f docker-compose.prod.yml pull $SERVICE_NAME
+          else
+            docker-compose -f docker-compose.yml -f docker-compose.prod.yml pull
+          fi
+          
+          docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d --remove-orphans
+          docker image prune -f
+          docker-compose ps
+        EOF

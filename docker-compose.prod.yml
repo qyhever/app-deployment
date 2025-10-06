@@ -1,0 +1,51 @@
+version: '3.8'
+
+# docker-compose.prod.yml
+# 生产环境的覆盖文件，用于指定生产镜像和敏感配置
+
+services:
+  # pinco 博客服务
+  pinco:
+    image: ghcr.io/qyhever/pinco:latest
+    build: null # 明确禁用 build，因为镜像是预构建的
+    restart: unless-stopped
+    networks:
+      - app-network
+
+  # r3-admin-front 前端服务
+  r3-admin-front:
+    image: ghcr.io/qyhever/r3-admin-front:latest
+    build: null
+    restart: unless-stopped
+    networks:
+      - app-network
+
+  # r3-admin-server 后端服务
+  r3-admin-server:
+    image: ghcr.io/qyhever/r3-admin-server:latest
+    build: null
+    environment:
+      - NODE_ENV=production
+      - PORT=9506
+      - DB_TYPE=mysql
+      # 使用 secrets 或服务器环境变量来注入敏感信息
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_DATABASE=${DB_DATABASE}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_SYNC=false
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_EXPIRE=${JWT_EXPIRE}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
+    networks:
+      - app-network
+
+  # Nginx 服务 - 无需覆盖，将使用 docker-compose.yml 中的定义
+  nginx: {}
+
+networks:
+  app-network:
+    driver: bridge
