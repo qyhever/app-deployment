@@ -4,7 +4,7 @@ services:
   # pinco博客服务 - 根路径访问
   pinco:
     build:
-      context: ./pinco
+      context: ../pinco
       dockerfile: Dockerfile
     container_name: pinco
     restart: unless-stopped
@@ -14,7 +14,7 @@ services:
   # r3-admin-front前端服务 - /r3-admin路径访问
   r3-admin-front:
     build:
-      context: ./r3-admin-front
+      context: ../r3-admin-front
       dockerfile: Dockerfile
     container_name: r3-admin-front
     restart: unless-stopped
@@ -24,7 +24,7 @@ services:
   # r3-admin-server后端服务 - 为r3-admin-front提供API
   r3-admin-server:
     build:
-      context: ./r3-admin-server
+      context: ../r3-admin-server
       dockerfile: Dockerfile
     container_name: r3-admin-server
     restart: unless-stopped

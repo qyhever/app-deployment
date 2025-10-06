@@ -50,6 +50,11 @@ docker-compose exec nginx nginx -t
 
 # 重启 r3-admin-server 服务
 docker-compose up --build r3-admin-server -d
+
+# 重启服务
+cd /opt/pros
+docker-compose -f docker-compose.yml -f docker-compose.prod.yml down
+docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 ```
 
 ### 3. 访问应用
