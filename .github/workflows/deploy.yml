@@ -33,10 +33,10 @@ jobs:
       with:
         ssh-private-key: ${{ secrets.SERVER_SSH_KEY }}
 
-    # - name: Display for debugging
-    #   run: |
-    #     echo "Verifying the public key that will be used for authentication..."
-    #     ssh-keygen -y -f <(echo "${{ secrets.SERVER_SSH_KEY }}")
+    - name: Display for debugging
+      run: |
+        echo "Verifying the public key that will be used for authentication..."
+        ssh-keygen -y -f <(echo "${{ secrets.SERVER_SSH_KEY }}")
 
     - name: Add server to known hosts
       run: ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
