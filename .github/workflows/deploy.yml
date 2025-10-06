@@ -35,9 +35,8 @@ jobs:
     - name: Display for debugging
       run: |
         echo "Verifying the public key that will be used for authentication..."
-        echo "SERVER_HOST: ${{ secrets.SERVER_HOST }}"
-        echo "SERVER_USER: ${{ secrets.SERVER_USER }}"
-        echo "SERVER_SSH_KEY: ${{ secrets.SERVER_SSH_KEY }}"
+        ssh-keygen -y -f <(echo "${{ secrets.SERVER_HOST }}")
+        ssh-keygen -y -f <(echo "${{ secrets.SERVER_USER }}")
         ssh-keygen -y -f <(echo "${{ secrets.SERVER_SSH_KEY }}")
 
     - name: Add server to known hosts
