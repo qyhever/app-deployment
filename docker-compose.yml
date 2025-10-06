@@ -56,6 +56,9 @@ services:
       - ./nginx/logs/access.log:/var/log/nginx/access.log
       - ./nginx/logs/error.log:/var/log/nginx/error.log
       - ./nginx/html:/usr/share/nginx/html
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      - TZ=Asia/Shanghai
     depends_on:
       - pinco
       - r3-admin-front
