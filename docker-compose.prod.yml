@@ -7,7 +7,7 @@ services:
   # pinco 博客服务
   pinco:
     image: ghcr.io/qyhever/pinco:latest
-    build: null # 明确禁用 build，因为镜像是预构建的
+
     restart: unless-stopped
     networks:
       - app-network
@@ -15,7 +15,7 @@ services:
   # r3-admin-front 前端服务
   r3-admin-front:
     image: ghcr.io/qyhever/r3-admin-front:latest
-    build: null
+
     restart: unless-stopped
     networks:
       - app-network
@@ -23,7 +23,7 @@ services:
   # r3-admin-server 后端服务
   r3-admin-server:
     image: ghcr.io/qyhever/r3-admin-server:latest
-    build: null
+
     volumes:
       - /etc/localtime:/etc/localtime:ro
     environment:
@@ -53,6 +53,7 @@ services:
     container_name: nginx-proxy
     ports:
       - '80:80'
+      - '443:443'
     volumes:
       - ./nginx/nginx.prod.conf:/etc/nginx/nginx.conf
       - /var/log/nginx/access.log:/var/log/nginx/access.log
